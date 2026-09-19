@@ -1,5 +1,7 @@
 package io.github.eatmyvenom.litematicin.mixin.quasiEssentialClient;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.authlib.GameProfile;
 import io.github.eatmyvenom.litematicin.utils.FakeAccurateBlockPlacement;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -67,68 +69,68 @@ public abstract class ClientPlayerEntityMixin extends Player {
 	}
 
 	//#if MC>=12102
-	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V", ordinal = 1), require = 0)
+	@WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V", ordinal = 1), require = 0)
 	//#elseif MC>=11904
 	//$$ @Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V", ordinal = 1), require = 0)
 	//#else
 	//$$@Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/Packet;)V", ordinal = 2), require = 0)
 	//#endif
-	private void onSendPacketVehicle(ClientPacketListener clientPlayNetworkHandler, Packet<?> packet) {
+	private void onSendPacketVehicle(ClientPacketListener instance, Packet packet, Operation<Void> original) {
 		// replaces all packets with a fake packet if PRINTER_SUPPRESS_PACKETS is true
 		if (canSendPacketNormally()) {
-			clientPlayNetworkHandler.send(packet);
+			original.call(instance, packet);
 			return;
 		}
-		clientPlayNetworkHandler.send(createFakeRotPacket());
+		instance.send(createFakeRotPacket());
 	}
 
 	//#if MC>=12102
-	@Redirect(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V", ordinal = 0), require = 0)
+	@WrapOperation(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V", ordinal = 0), require = 0)
 	//#elseif MC>=11904
 	//$$ @Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V", ordinal = 2), require = 0)
 	//#else
 	//$$@Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/Packet;)V", ordinal = 3), require = 0)
 	//#endif
-	private void onSendPacketFull(ClientPacketListener clientPlayNetworkHandler, Packet<?> packet) {
-		if (canSendPacketNormally()) {
-			clientPlayNetworkHandler.send(packet);
-			return;
-		}
-		clientPlayNetworkHandler.send(createFakePosRotPacket());
+	private void onSendPacketFull(ClientPacketListener instance, Packet packet, Operation<Void> original) {
+        if (canSendPacketNormally()) {
+            original.call(instance, packet);
+            return;
+        }
+		instance.send(createFakePosRotPacket());
 	}
 
 	//#if MC>=12102
-	@Redirect(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V", ordinal = 1), require = 0)
-	private void onSendPacketPositionOnly(ClientPacketListener clientPlayNetworkHandler, Packet<?> packet) {
-		if (canSendPacketNormally()) {
-			clientPlayNetworkHandler.send(packet);
-			return;
-		}
-		clientPlayNetworkHandler.send(createFakePosRotPacket());
+	@WrapOperation(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V", ordinal = 1), require = 0)
+	private void onSendPacketPositionOnly(ClientPacketListener instance, Packet packet, Operation<Void> original) {
+        if (canSendPacketNormally()) {
+            original.call(instance, packet);
+            return;
+        }
+		instance.send(createFakePosRotPacket());
 	}
 
 	//#if MC>=12102
-	@Redirect(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V", ordinal = 2), require = 0)
+	@WrapOperation(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V", ordinal = 2), require = 0)
 	//#elseif MC>=11904
 	//$$ @Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V", ordinal = 4), require = 0)
 	//#else
 	//$$@Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/Packet;)V", ordinal = 5), require = 0)
 	//#endif
-	private void onSendPacketLookAndOnGround(ClientPacketListener clientPlayNetworkHandler, Packet<?> packet) {
-		if (canSendPacketNormally()) {
-			clientPlayNetworkHandler.send(packet);
-			return;
-		}
-		clientPlayNetworkHandler.send(createFakeRotPacket());
+	private void onSendPacketLookAndOnGround(ClientPacketListener instance, Packet packet, Operation<Void> original) {
+        if (canSendPacketNormally()) {
+            original.call(instance, packet);
+            return;
+        }
+		instance.send(createFakeRotPacket());
 	}
 
 	//#if MC>=12102
-	@Redirect(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V", ordinal = 3), require = 0)
-	private void onSendPacketStatusOnly(ClientPacketListener clientPlayNetworkHandler, Packet<?> packet) {
-		if (canSendPacketNormally()) {
-			clientPlayNetworkHandler.send(packet);
-			return;
-		}
-		clientPlayNetworkHandler.send(createFakeRotPacket());
+	@WrapOperation(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V", ordinal = 3), require = 0)
+	private void onSendPacketStatusOnly(ClientPacketListener instance, Packet packet, Operation<Void> original) {
+        if (canSendPacketNormally()) {
+            original.call(instance, packet);
+            return;
+        }
+		instance.send(createFakeRotPacket());
 	}
 }

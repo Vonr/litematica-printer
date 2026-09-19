@@ -1,5 +1,7 @@
 package io.github.eatmyvenom.litematicin.mixin.quasiEssentialClient;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.eatmyvenom.litematicin.LitematicaMixinMod;
 import io.github.eatmyvenom.litematicin.utils.FakeAccurateBlockPlacement;
 import net.minecraft.core.Direction;
@@ -28,8 +30,8 @@ public class ItemPlacementContextMixin {
 		}
 	}
 
-	@Redirect(method = "getNearestLookingDirections", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/Direction;orderedByNearest(Lnet/minecraft/world/entity/Entity;)[Lnet/minecraft/core/Direction;"), require = 0)
-	private Direction[] onGetArrayDirections(Entity entity) {
+	@WrapOperation(method = "getNearestLookingDirections", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/Direction;orderedByNearest(Lnet/minecraft/world/entity/Entity;)[Lnet/minecraft/core/Direction;"), require = 0)
+	private Direction[] onGetArrayDirections(Entity entity, Operation<Direction[]> original) {
 		if (!LitematicaMixinMod.DISABLE_SINGLEPLAYER_HANDLE.getBooleanValue() && FakeAccurateBlockPlacement.fakeDirection != null && FakeAccurateBlockPlacement.requestedTicks > -3) {
 			return FakeAccurateBlockPlacement.getFacingOrder();
 		}
